@@ -1,4 +1,5 @@
 Proyecto: Organizador de Eventos – Android (Kotlin)
+
 Aplicación móvil nativa desarrollada en Android Studio con Kotlin, cuyo objetivo es gestionar eventos personales como citas, juntas, entregas de proyecto, exámenes y más.
 Este proyecto forma parte del desarrollo de una aplicación completa que incluye registro, consulta, modificación, notificaciones y respaldo en la nube.
 
@@ -40,4 +41,5 @@ Tecnologías previstas
 - Drive API / Dropbox API
 
 Estado del proyecto
+
 En proceso de estructura inicial, diseño de pantallas y configuración del proyecto.
