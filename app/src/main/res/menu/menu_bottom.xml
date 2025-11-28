@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/bottom_home"
+        android:title="Inicio" />
+
+    <item android:id="@+id/bottom_consult"
+        android:title="Consultar" />
+
+    <item android:id="@+id/bottom_exit"
+        android:title="Salir" />
+</menu>
