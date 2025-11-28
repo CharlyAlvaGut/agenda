@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -19,200 +20,265 @@
             android:textSize="20sp"
             android:layout_marginBottom="16dp" />
 
-        <!-- SELECCIÓN DE CRITERIO -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Criterio de consulta:" />
-
-        <RadioGroup
-            android:id="@+id/rgCriterio"
+        <!-- TARJETA: FILTROS DE BÚSQUEDA -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            app:cardCornerRadius="12dp"
+            app:cardUseCompatPadding="true"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="16dp">
 
-            <RadioButton
-                android:id="@+id/rbFecha"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fecha" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <RadioButton
-                android:id="@+id/rbRango"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rango" />
-
-            <RadioButton
-                android:id="@+id/rbMes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mes" />
-
-            <RadioButton
-                android:id="@+id/rbAnio"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Año" />
-        </RadioGroup>
-
-        <!-- FILTROS DE FECHA / RANGO / MES / AÑO -->
-
-        <!-- Consulta por FECHA -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fecha:" />
-
-        <EditText
-            android:id="@+id/etFechaConsulta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Seleccionar fecha"
-            android:focusable="false"
-            android:clickable="true"
-            android:layout_marginBottom="12dp" />
-
-        <!-- Consulta por RANGO -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rango de fechas:" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
-            <EditText
-                android:id="@+id/etFechaInicio"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Fecha inicio"
-                android:focusable="false"
-                android:clickable="true" />
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="wrap_content" />
-
-            <EditText
-                android:id="@+id/etFechaFin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Fecha fin"
-                android:focusable="false"
-                android:clickable="true" />
-        </LinearLayout>
-
-        <!-- Consulta por MES -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mes:" />
-
-        <Spinner
-            android:id="@+id/spMes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dialog"
-            android:layout_marginBottom="12dp" />
-
-        <!-- Consulta por AÑO -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Año:" />
-
-        <EditText
-            android:id="@+id/etAnio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Ejemplo: 2025"
-            android:inputType="number"
-            android:layout_marginBottom="12dp" />
-
-        <!-- FILTRO POR TIPO DE EVENTO -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tipo de evento:" />
-
-        <Spinner
-            android:id="@+id/spTipoEvento"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:spinnerMode="dialog"
-            android:layout_marginBottom="16dp" />
-
-        <!-- BOTÓN CONSULTAR -->
-        <Button
-            android:id="@+id/btnBuscar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Buscar eventos"
-            android:layout_marginBottom="16dp" />
-
-        <!-- RESULTADOS (TABLA DE EJEMPLO) -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Resultados:"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <TableLayout
-            android:id="@+id/tableResultados"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stretchColumns="0,1,2">
-
-            <!-- ENCABEZADOS -->
-            <TableRow>
+                <!-- SELECCIÓN DE CRITERIO -->
                 <TextView
-                    android:text="Fecha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Criterio de consulta:"
                     android:textStyle="bold"
-                    android:padding="4dp" />
+                    android:layout_marginBottom="4dp" />
+
+                <RadioGroup
+                    android:id="@+id/rgCriterio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <RadioButton
+                        android:id="@+id/rbFecha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fecha" />
+
+                    <RadioButton
+                        android:id="@+id/rbRango"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rango" />
+
+                    <RadioButton
+                        android:id="@+id/rbMes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mes" />
+
+                    <RadioButton
+                        android:id="@+id/rbAnio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Año" />
+                </RadioGroup>
+
+                <!-- Consulta por FECHA -->
                 <TextView
-                    android:text="Tipo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Fecha:"
                     android:textStyle="bold"
-                    android:padding="4dp" />
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etFechaConsulta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Seleccionar fecha"
+                        android:focusable="false"
+                        android:clickable="true" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Consulta por RANGO -->
                 <TextView
-                    android:text="Contacto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rango de fechas:"
                     android:textStyle="bold"
-                    android:padding="4dp" />
-            </TableRow>
+                    android:layout_marginBottom="4dp" />
 
-            <!-- FILAS DE EJEMPLO -->
-            <TableRow>
-                <TextView
-                    android:text="20/05/2025"
-                    android:padding="4dp" />
-                <TextView
-                    android:text="Cita"
-                    android:padding="4dp" />
-                <TextView
-                    android:text="Alejandro"
-                    android:padding="4dp" />
-            </TableRow>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
 
-            <TableRow>
-                <TextView
-                    android:text="22/05/2025"
-                    android:padding="4dp" />
-                <TextView
-                    android:text="Junta"
-                    android:padding="4dp" />
-                <TextView
-                    android:text="María"
-                    android:padding="4dp" />
-            </TableRow>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
 
-        </TableLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFechaInicio"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Fecha inicio"
+                            android:focusable="false"
+                            android:clickable="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFechaFin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Fecha fin"
+                            android:focusable="false"
+                            android:clickable="true" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <!-- Consulta por MES -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mes:"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <Spinner
+                    android:id="@+id/spMes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Consulta por AÑO -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Año:"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etAnio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Ejemplo: 2025"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- FILTRO POR TIPO DE EVENTO -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo de evento:"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <Spinner
+                    android:id="@+id/spTipoEvento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dialog"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- BOTÓN CONSULTAR -->
+                <Button
+                    android:id="@+id/btnBuscar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Buscar eventos" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- TARJETA: RESULTADOS -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardUseCompatPadding="true"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Resultados:"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <TableLayout
+                    android:id="@+id/tableResultados"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="0,1,2">
+
+                    <!-- ENCABEZADOS -->
+                    <TableRow
+                        android:background="#DDDDDD">
+
+                        <TextView
+                            android:text="Fecha"
+                            android:textStyle="bold"
+                            android:padding="6dp" />
+                        <TextView
+                            android:text="Tipo"
+                            android:textStyle="bold"
+                            android:padding="6dp" />
+                        <TextView
+                            android:text="Contacto"
+                            android:textStyle="bold"
+                            android:padding="6dp" />
+                    </TableRow>
+
+                    <!-- FILAS DE EJEMPLO -->
+                    <TableRow>
+                        <TextView
+                            android:text="20/05/2025"
+                            android:padding="4dp" />
+                        <TextView
+                            android:text="Cita"
+                            android:padding="4dp" />
+                        <TextView
+                            android:text="Alejandro"
+                            android:padding="4dp" />
+                    </TableRow>
+
+                    <TableRow>
+                        <TextView
+                            android:text="22/05/2025"
+                            android:padding="4dp" />
+                        <TextView
+                            android:text="Junta"
+                            android:padding="4dp" />
+                        <TextView
+                            android:text="María"
+                            android:padding="4dp" />
+                    </TableRow>
+
+                </TableLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>
