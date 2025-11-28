@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2025-11-26 20:35:52
+Date: 2025-11-28 15:38:38
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -68,7 +68,8 @@ CREATE TABLE `d_lugar` (
   `c_v_usucap` varchar(20) DEFAULT NULL,
   `d_f_fechcap` datetime NOT NULL,
   `w_v_status` varchar(1) NOT NULL,
-  PRIMARY KEY (`pk_i_evento`) USING BTREE
+  PRIMARY KEY (`pk_i_evento`) USING BTREE,
+  CONSTRAINT `fk_d_lugar_d_lugar_1` FOREIGN KEY (`pk_i_evento`) REFERENCES `m_evento` (`pk_i_evento`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
@@ -89,7 +90,11 @@ CREATE TABLE `m_evento` (
   `c_v_usucap` varchar(20) NOT NULL,
   `d_f_fechcap` datetime NOT NULL,
   `w_v_status` varchar(1) NOT NULL,
-  PRIMARY KEY (`pk_i_evento`) USING BTREE
+  PRIMARY KEY (`pk_i_evento`) USING BTREE,
+  KEY `fk_m_evento_m_evento_1` (`pk_i_categoria`),
+  KEY `fk_m_evento_m_evento_2` (`pk_i_estatus`),
+  CONSTRAINT `fk_m_evento_m_evento_1` FOREIGN KEY (`pk_i_categoria`) REFERENCES `c_categoria` (`pk_i_categoria`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_m_evento_m_evento_2` FOREIGN KEY (`pk_i_estatus`) REFERENCES `c_estatus` (`pk_i_estatus`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- ----------------------------
