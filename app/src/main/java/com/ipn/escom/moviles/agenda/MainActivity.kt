@@ -8,6 +8,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.appbar.MaterialToolbar
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
+import android.app.AlertDialog
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_backup -> replaceFragment(BackupFragment())
                 R.id.nav_restore -> replaceFragment(RestoreFragment())
                 R.id.nav_about -> replaceFragment(AboutFragment())
-                R.id.nav_exit -> finish()
+                R.id.nav_exit -> confirmarSalida()
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.bottom_home -> replaceFragment(HomeFragment())
                 R.id.bottom_consult -> replaceFragment(ConsultFragment())
-                R.id.bottom_exit -> finish()
+                R.id.bottom_exit -> confirmarSalida()
             }
             true
         }
@@ -64,4 +65,17 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
+
+    //Funcion para mostrar un modal de confirmación al salir
+    private fun confirmarSalida() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Salir")
+        builder.setMessage("¿Estás seguro de que deseas salir de la aplicación?")
+        builder.setPositiveButton("Sí") { _, _ ->
+            finish() // Aquí sí cerramos la app
+        }
+        builder.setNegativeButton("No", null) // Simplemente cierra el diálogo
+        builder.show()
+    }
 }
+
