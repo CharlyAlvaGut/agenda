@@ -84,7 +84,7 @@ CREATE TABLE `m_evento` (
   `pk_i_evento` int(11) NOT NULL AUTO_INCREMENT,
   `d_f_fechevento` date DEFAULT NULL,
   `d_t_horaevento` time DEFAULT NULL,
-  `d_v_evento` varchar(20) NOT NULL,
+  `d_v_evento` varchar(255) NOT NULL,
   `pk_i_categoria` int(11) DEFAULT NULL,
   `pk_i_estatus` int(11) DEFAULT NULL,
   `c_v_usucap` varchar(20) NOT NULL,
