@@ -180,7 +180,6 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
                 Log.d("API_SUCCESS", response)
                 Toast.makeText(requireContext(), "¡Guardado con éxito!", Toast.LENGTH_LONG).show()
 
-                // --- 3. AHORA SÍ FUNCIONA ESTO PORQUE SON VARIABLES GLOBALES ---
                 etFecha.text.clear()
                 etHora.text.clear()
                 etDescripcion.text.clear()
@@ -205,17 +204,20 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
             }) {
             override fun getParams(): Map<String, String> {
                 val params = HashMap<String, String>()
+                val ubicacion = etUbicacion.text.toString().trim()
+                val partes = ubicacion.split(",")
+                val latitud = partes[0].trim()
+                val longitud = partes[1].trim()
+
                 params["fecha"] = fecha
                 params["hora"] = hora
 
-                //Enviamos la descripción Y la ubicación juntas en el campo "evento"
-                val ubicacion = etUbicacion.text.toString()
-                val descripcionFinal = if (ubicacion.isNotEmpty()) "$evento [Lugar: $ubicacion]" else evento
-
-                params["evento"] = descripcionFinal
-
+                params["evento"] = evento
                 params["id_categoria"] = idCat
                 params["id_estatus"] = idStatus
+                params["latitud"] = latitud
+                params["longitud"] = longitud
+
                 // params["contacto"] = etContacto.text.toString() // Si decides enviarlo después
                 return params
             }

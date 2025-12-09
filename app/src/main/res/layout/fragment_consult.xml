@@ -75,110 +75,149 @@
                         android:text="Año" />
                 </RadioGroup>
 
-                <!-- Consulta por FECHA -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha:"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etFechaConsulta"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Seleccionar fecha"
-                        android:focusable="false"
-                        android:clickable="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Consulta por RANGO -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rango de fechas:"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
-
+                <!-- ===================== -->
+                <!--    BLOQUE: FECHA      -->
+                <!-- ===================== -->
                 <LinearLayout
+                    android:id="@+id/layoutFecha"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_marginBottom="12dp">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etFechaInicio"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Fecha inicio"
-                            android:focusable="false"
-                            android:clickable="true" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <Space
-                        android:layout_width="8dp"
-                        android:layout_height="wrap_content" />
+                        android:text="Fecha:"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp" />
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etFechaFin"
+                            android:id="@+id/etFechaConsulta"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Fecha fin"
+                            android:hint="Seleccionar fecha"
                             android:focusable="false"
                             android:clickable="true" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
-                <!-- Consulta por MES -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mes:"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
-
-                <Spinner
-                    android:id="@+id/spMes"
+                <!-- ===================== -->
+                <!--    BLOQUE: RANGO      -->
+                <!-- ===================== -->
+                <LinearLayout
+                    android:id="@+id/layoutRango"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:spinnerMode="dialog"
-                    android:layout_marginBottom="12dp" />
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone">
 
-                <!-- Consulta por AÑO -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Año:"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="4dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rango de fechas:"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etAnio"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Ejemplo: 2025"
-                        android:inputType="number" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etFechaInicio"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Fecha inicio"
+                                android:focusable="false"
+                                android:clickable="true" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Space
+                            android:layout_width="8dp"
+                            android:layout_height="wrap_content" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etFechaFin"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Fecha fin"
+                                android:focusable="false"
+                                android:clickable="true" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ===================== -->
+                <!--     BLOQUE: MES       -->
+                <!-- ===================== -->
+                <LinearLayout
+                    android:id="@+id/layoutMes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mes:"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp" />
+
+                    <Spinner
+                        android:id="@+id/spMes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:spinnerMode="dialog" />
+                </LinearLayout>
+
+                <!-- ===================== -->
+                <!--      BLOQUE: AÑO      -->
+                <!-- ===================== -->
+                <LinearLayout
+                    android:id="@+id/layoutAnio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Año:"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etAnio"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Ejemplo: 2025"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
                 <!-- FILTRO POR TIPO DE EVENTO -->
                 <TextView
@@ -226,59 +265,16 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
-                <TableLayout
-                    android:id="@+id/tableResultados"
+                <!-- AQUÍ SE AGREGARÁN LAS TARJETAS DINÁMICAMENTE -->
+                <LinearLayout
+                    android:id="@+id/containerResultados"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:stretchColumns="0,1,2">
-
-                    <!-- ENCABEZADOS -->
-                    <TableRow
-                        android:background="#DDDDDD">
-
-                        <TextView
-                            android:text="Fecha"
-                            android:textStyle="bold"
-                            android:padding="6dp" />
-                        <TextView
-                            android:text="Tipo"
-                            android:textStyle="bold"
-                            android:padding="6dp" />
-                        <TextView
-                            android:text="Contacto"
-                            android:textStyle="bold"
-                            android:padding="6dp" />
-                    </TableRow>
-
-                    <!-- FILAS DE EJEMPLO -->
-                    <TableRow>
-                        <TextView
-                            android:text="20/05/2025"
-                            android:padding="4dp" />
-                        <TextView
-                            android:text="Cita"
-                            android:padding="4dp" />
-                        <TextView
-                            android:text="Alejandro"
-                            android:padding="4dp" />
-                    </TableRow>
-
-                    <TableRow>
-                        <TextView
-                            android:text="22/05/2025"
-                            android:padding="4dp" />
-                        <TextView
-                            android:text="Junta"
-                            android:padding="4dp" />
-                        <TextView
-                            android:text="María"
-                            android:padding="4dp" />
-                    </TableRow>
-
-                </TableLayout>
+                    android:orientation="vertical" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
 
     </LinearLayout>
 </ScrollView>
