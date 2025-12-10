@@ -3,7 +3,6 @@
 header("Content-Type: application/json; charset=utf-8");
 require_once "config.php";
 
-// Hoy en formato YYYY-MM-DD (lado servidor)
 $hoy = date("Y-m-d");
 
 $sql = "

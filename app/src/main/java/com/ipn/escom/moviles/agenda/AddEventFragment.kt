@@ -19,6 +19,10 @@ import java.util.Calendar
 
 class AddEventFragment : Fragment(R.layout.fragment_add_event) {
 
+    // --- MODO EDICIÓN / ALTA ---
+    // Si viene en arguments, es edición; si no, es alta
+    private var idEvento: String? = null
+
     // --- 1. DECLARAMOS LAS VARIABLES AQUÍ ARRIBA PARA QUE SEAN GLOBALES ---
     private lateinit var etFecha: EditText
     private lateinit var etHora: EditText
@@ -68,17 +72,27 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // --- 2. AQUÍ SOLO LAS INICIALIZAMOS (quitamos el 'val' del principio) ---
+        // --- 0. Leemos argumentos (por si venimos en modo edición) ---
+        idEvento = arguments?.getString("id_evento")
+
+        val fechaArg  = arguments?.getString("fecha")
+        val horaArg   = arguments?.getString("hora")
+        val descArg   = arguments?.getString("descripcion")
+        val ubicArg   = arguments?.getString("ubicacion")
+        val catIdxArg = arguments?.getInt("categoria_index")  // 0..4
+        val estIdxArg = arguments?.getInt("estatus_index")    // 0..2
+
+        // --- 2. INICIALIZAMOS VISTAS ---
         spCategoria = view.findViewById(R.id.spCategoria)
-        spStatus = view.findViewById(R.id.spStatus)
-        etFecha = view.findViewById(R.id.etFecha)
-        etHora = view.findViewById(R.id.etHora)
+        spStatus    = view.findViewById(R.id.spStatus)
+        etFecha     = view.findViewById(R.id.etFecha)
+        etHora      = view.findViewById(R.id.etHora)
         etDescripcion = view.findViewById(R.id.etDescripcion)
-        etUbicacion = view.findViewById(R.id.etUbicacion)
-        etContacto = view.findViewById(R.id.etContacto)
+        etUbicacion   = view.findViewById(R.id.etUbicacion)
+        etContacto    = view.findViewById(R.id.etContacto)
         val btnGuardar: Button = view.findViewById(R.id.btnGuardar)
 
-        // Configuración de Spinners
+        // --- 3. Configuración de Spinners ---
         val categorias = listOf("Cita", "Junta", "Entrega de proyecto", "Examen", "Otros")
         val adapterCategoria = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categorias)
         adapterCategoria.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -90,7 +104,20 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
         spStatus.adapter = adapterStatus
         spStatus.setSelection(0)
 
-        // Lógica de Fecha
+        // --- 4. Si estamos en modo edición, rellenamos los campos ---
+        if (idEvento != null) {
+            btnGuardar.text = "Actualizar evento"
+
+            fechaArg?.let { etFecha.setText(it) }
+            horaArg?.let { etHora.setText(it) }
+            descArg?.let { etDescripcion.setText(it) }
+            ubicArg?.let { etUbicacion.setText(it) }
+
+            catIdxArg?.let { spCategoria.setSelection(it) }
+            estIdxArg?.let { spStatus.setSelection(it) }
+        }
+
+        // --- 5. Lógica de Fecha ---
         etFecha.setOnClickListener {
             val calendario = Calendar.getInstance()
             android.app.DatePickerDialog(
@@ -99,11 +126,13 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
                     val fechaFormateada = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
                     etFecha.setText(fechaFormateada)
                 },
-                calendario.get(Calendar.YEAR), calendario.get(Calendar.MONTH), calendario.get(Calendar.DAY_OF_MONTH)
+                calendario.get(Calendar.YEAR),
+                calendario.get(Calendar.MONTH),
+                calendario.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
 
-        // Lógica de Hora
+        // --- 6. Lógica de Hora ---
         etHora.setOnClickListener {
             val calendario = Calendar.getInstance()
             android.app.TimePickerDialog(
@@ -112,33 +141,35 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
                     val horaFormateada = String.format("%02d:%02d:00", hourOfDay, minute)
                     etHora.setText(horaFormateada)
                 },
-                calendario.get(Calendar.HOUR_OF_DAY), calendario.get(Calendar.MINUTE), true
+                calendario.get(Calendar.HOUR_OF_DAY),
+                calendario.get(Calendar.MINUTE),
+                true
             ).show()
         }
 
-        // Lógica de Contactos
+        // --- 7. Lógica de Contactos ---
         etContacto.setOnClickListener {
             verificarPermisoYAbirContactos()
         }
 
-        // Lógica de Ubicación (Mapa)
+        // --- 8. Lógica de Ubicación (Mapa) ---
         etUbicacion.setOnClickListener {
             val intent = Intent(requireContext(), MapActivity::class.java)
             mapPickerLauncher.launch(intent)
         }
 
-        // Botón Guardar
+        // --- 9. Botón Guardar (INSERT o UPDATE según idEvento) ---
         btnGuardar.setOnClickListener {
             val fecha = etFecha.text.toString()
-            val hora = etHora.text.toString()
-            val desc = etDescripcion.text.toString()
+            val hora  = etHora.text.toString()
+            val desc  = etDescripcion.text.toString()
 
             if (fecha.isEmpty() || hora.isEmpty() || desc.isEmpty()) {
                 Toast.makeText(requireContext(), "Llena todos los campos obligatorios", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Mapeo de IDs
+            // Mapeo de IDs de catálogo (como ya lo tenías)
             val categoriaId = when (spCategoria.selectedItemPosition) {
                 0 -> "1"
                 1 -> "2"
@@ -159,7 +190,11 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
     }
 
     private fun verificarPermisoYAbirContactos() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_CONTACTS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             abrirAgendaContactos()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
@@ -171,21 +206,39 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
         contactPickerLauncher.launch(intent)
     }
 
-    private fun guardarEventoEnServidor(fecha: String, hora: String, evento: String, idCat: String, idStatus: String) {
+    private fun guardarEventoEnServidor(
+        fecha: String,
+        hora: String,
+        evento: String,
+        idCat: String,
+        idStatus: String
+    ) {
         val url = "http://10.0.2.2/agenda_api/add_evento.php"
         val queue = Volley.newRequestQueue(requireContext())
 
-        val stringRequest = object : StringRequest(Request.Method.POST, url,
+        val stringRequest = object : StringRequest(
+            Request.Method.POST,
+            url,
             { response ->
                 Log.d("API_SUCCESS", response)
-                Toast.makeText(requireContext(), "¡Guardado con éxito!", Toast.LENGTH_LONG).show()
 
-                etFecha.text.clear()
-                etHora.text.clear()
-                etDescripcion.text.clear()
-                etContacto.text.clear()
-                spCategoria.setSelection(0)
-                spStatus.setSelection(0)
+                val mensaje = if (idEvento == null) {
+                    "¡Guardado con éxito!"
+                } else {
+                    "¡Actualizado con éxito!"
+                }
+                Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show()
+
+                // Solo limpiamos si es ALTA; en edición normalmente regresas a la lista
+                if (idEvento == null) {
+                    etFecha.text.clear()
+                    etHora.text.clear()
+                    etDescripcion.text.clear()
+                    etContacto.text.clear()
+                    etUbicacion.text.clear()
+                    spCategoria.setSelection(0)
+                    spStatus.setSelection(0)
+                }
             },
             { error ->
                 Log.e("API_ERROR", "Detalle: $error") // Imprime el error crudo en Logcat
@@ -201,27 +254,40 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
                 }
 
                 Toast.makeText(requireContext(), mensajeError, Toast.LENGTH_LONG).show()
-            }) {
+            }
+        ) {
             override fun getParams(): Map<String, String> {
                 val params = HashMap<String, String>()
-                val ubicacion = etUbicacion.text.toString().trim()
-                val partes = ubicacion.split(",")
-                val latitud = partes[0].trim()
-                val longitud = partes[1].trim()
 
-                params["fecha"] = fecha
-                params["hora"] = hora
-
-                params["evento"] = evento
+                // Fecha/hora/otros datos
+                params["fecha"]       = fecha
+                params["hora"]        = hora
+                params["evento"]      = evento
                 params["id_categoria"] = idCat
-                params["id_estatus"] = idStatus
-                params["latitud"] = latitud
-                params["longitud"] = longitud
+                params["id_estatus"]   = idStatus
 
-                // params["contacto"] = etContacto.text.toString() // Si decides enviarlo después
+                // Ubicación: solo si viene algo válido
+                val ubicacion = etUbicacion.text.toString().trim()
+                if (ubicacion.isNotEmpty() && ubicacion.contains(",")) {
+                    val partes = ubicacion.split(",")
+                    if (partes.size >= 2) {
+                        val latitud = partes[0].trim()
+                        val longitud = partes[1].trim()
+                        params["latitud"] = latitud
+                        params["longitud"] = longitud
+                    }
+                }
+
+                // Si estamos en modo edición, mandamos el id_evento
+                idEvento?.let {
+                    params["id_evento"] = it
+                }
+
+                // params["contacto"] = etContacto.text.toString() // Por si luego lo guardas en BD
                 return params
             }
         }
+
         queue.add(stringRequest)
     }
 }

@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.fragment.app.Fragment
+//import androidx.navigation.fragment.findNavController
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputEditText
 import java.util.*
@@ -30,12 +32,13 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
     // Contenedor donde se agregan las tarjetas de resultados
     private lateinit var containerResultados: LinearLayout
 
-    // Spinners (los uso en varios lados)
+    // Spinners
     private lateinit var spMes: Spinner
     private lateinit var spTipo: Spinner
 
-    // URL base de tu API
-    private val BASE_URL = "http://10.0.2.2/agenda_api/consult_eventos.php"
+    // URLs base de tu API
+    private val BASE_URL_CONSULTA = "http://10.0.2.2/agenda_api/consult_eventos.php"
+    private val URL_DELETE = "http://10.0.2.2/agenda_api/delete_evento.php"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,21 +109,18 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
             }
         }
 
-        // ====== Botón Buscar (ahora llama a la API) ======
+        // ====== Botón Buscar ======
         btnBuscar.setOnClickListener {
             val criterioId = rgCriterio.checkedRadioButtonId
             val criterioApi = when (criterioId) {
                 R.id.rbFecha -> "fecha"
                 R.id.rbRango -> "rango"
                 R.id.rbMes   -> "mes"
-                R.id.rbAnio  -> "anio"   // OJO: sin tilde, así lo espera el PHP
+                R.id.rbAnio  -> "anio"
                 else -> "fecha"
             }
 
-            // Mapeo del tipo seleccionado a id_categoria (1..5 o null si "Todos")
             val idCategoria = obtenerIdCategoriaDesdeSpinner(spTipo.selectedItemPosition)
-
-            // Construir URL según criterio
             val url = construirUrlConsulta(criterioApi, idCategoria) ?: return@setOnClickListener
 
             consultarEventos(url)
@@ -129,7 +129,7 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
 
     // ====== Construir URL según criterio y validar campos ======
     private fun construirUrlConsulta(criterio: String, idCategoria: Int?): String? {
-        val builder = Uri.parse(BASE_URL).buildUpon()
+        val builder = Uri.parse(BASE_URL_CONSULTA).buildUpon()
         builder.appendQueryParameter("criterio", criterio)
 
         when (criterio) {
@@ -185,7 +185,6 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
 
     // ====== Llamada a la API con Volley ======
     private fun consultarEventos(url: String) {
-        // Limpia visualmente mientras carga
         containerResultados.removeAllViews()
 
         val queue = Volley.newRequestQueue(requireContext())
@@ -209,15 +208,21 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
                     if (eventosJson != null) {
                         for (i in 0 until eventosJson.length()) {
                             val ev = eventosJson.getJSONObject(i)
+
+
+                            val idEvento  = ev.optInt("id_evento", 0)
                             val fecha     = ev.optString("fecha", "")
                             val categoria = ev.optString("categoria", "")
                             val evento    = ev.optString("evento", "")
 
-                            // Usamos:
-                            //  fecha    -> fecha en la tarjeta
-                            //  categoria-> tipo en la tarjeta
-                            //  evento   -> lo mostramos en "contacto"/detalle
-                            lista.add(EventoResultado(fecha, categoria, evento))
+                            lista.add(
+                                EventoResultado(
+                                    idEvento = idEvento,
+                                    fecha    = fecha,
+                                    tipo     = categoria,
+                                    contacto = evento
+                                )
+                            )
                         }
                     }
 
@@ -276,7 +281,6 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
     }
 
     // ====== Helpers de visibilidad ======
-
     private fun ocultarTodos() {
         layoutFecha.visibility = View.GONE
         layoutRango.visibility = View.GONE
@@ -324,23 +328,81 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
             tvContacto.text = evento.contacto
 
             btnModificar.setOnClickListener {
-                Toast.makeText(requireContext(), "Modificar ${evento.fecha}", Toast.LENGTH_SHORT).show()
-                // Aquí luego haces otra pantalla / diálogo para editar
+                // Listas iguales a las de AddEventFragment
+                val categorias = listOf("Cita", "Junta", "Entrega de proyecto", "Examen", "Otros")
+
+                // Sacamos el índice de la categoría según el texto que regresó la API
+                val catIndex = categorias.indexOfFirst {
+                    it.equals(evento.tipo, ignoreCase = true)
+                }.let { idx ->
+                    if (idx >= 0) idx else 0
+                }
+
+                // Por ahora no traes estatus desde la API, lo dejamos en 0 (Pendiente)
+                val estatusIndex = 0
+
+                // Armamos los argumentos para AddEventFragment
+                val args = Bundle().apply {
+                    putString("id_evento", evento.idEvento.toString())
+                    putString("fecha", evento.fecha)
+                    putString("hora", "")                // cuando tu API de consulta traiga hora, la pones aquí
+                    putString("descripcion", evento.contacto)
+                    putString("ubicacion", "")           // cuando tengas lat,long desde la API, lo pones aquí
+
+                    putInt("categoria_index", catIndex)
+                    putInt("estatus_index", estatusIndex)
+                }
+
+                val fragment = AddEventFragment().apply {
+                    arguments = args
+                }
+
+                // ⚠️ Cambia R.id.fragment_container por el ID real de tu contenedor de fragments en la Activity
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit()
             }
 
+
             btnEliminar.setOnClickListener {
-                Toast.makeText(requireContext(), "Eliminar ${evento.fecha}", Toast.LENGTH_SHORT).show()
-                // Aquí luego llamas a tu API de eliminar
+                eliminarEventoEnServidor(evento.idEvento)
             }
 
             containerResultados.addView(cardView)
         }
     }
+
+    // ====== ELIMINAR EN EL SERVIDOR ======
+    private fun eliminarEventoEnServidor(idEvento: Int) {
+        val queue = Volley.newRequestQueue(requireContext())
+
+        val request = object : StringRequest(
+            Method.POST,
+            URL_DELETE,
+            { response ->
+                Toast.makeText(requireContext(), "Evento eliminado", Toast.LENGTH_SHORT).show()
+                // Opcional: volver a ejecutar la búsqueda actual
+                containerResultados.removeAllViews()
+            },
+            { error ->
+                error.printStackTrace()
+                Toast.makeText(requireContext(), "Error al eliminar: ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        ) {
+            override fun getParams(): MutableMap<String, String> {
+                return hashMapOf("id_evento" to idEvento.toString())
+            }
+        }
+
+        queue.add(request)
+    }
 }
 
-// Modelo simple para los resultados
+// Modelo con idEvento incluido
 data class EventoResultado(
+    val idEvento: Int,
     val fecha: String,
-    val tipo: String,
-    val contacto: String
+    val tipo: String,      // nombre de la categoría
+    val contacto: String   // descripción del evento
 )
