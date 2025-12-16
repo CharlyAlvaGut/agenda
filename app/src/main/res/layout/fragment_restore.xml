@@ -31,7 +31,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recupera tus eventos desde un respaldo anterior."
+            android:text="Recupera tus eventos seleccionando un archivo de respaldo (JSON) desde cualquier ubicación."
             android:gravity="center"
             android:textSize="16sp"
             android:layout_marginBottom="16dp"/>
@@ -39,19 +39,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⚠️ Cuidado: Esto reemplazará los datos actuales."
+            android:text="⚠️ Cuidado: Esto agregará los eventos del archivo a tu agenda actual."
             android:textColor="#D32F2F"
             android:gravity="center"
             android:textSize="12sp"
             android:layout_marginBottom="32dp"/>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardRestoreDrive"
+            android:id="@+id/cardRestoreAction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginBottom="16dp"
+            android:foreground="?attr/selectableItemBackground"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp">
 
@@ -65,8 +65,8 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@android:drawable/stat_sys_download"
-                    app:tint="#0F9D58"/>
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="#2196F3"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -78,48 +78,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Desde Google Drive"
+                        android:text="Buscar Archivo"
                         android:textStyle="bold"
                         android:textSize="18sp"/>
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardRestoreDropbox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@android:drawable/stat_sys_download"
-                    app:tint="#0061FF"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingStart="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Desde Dropbox"
-                        android:textStyle="bold"
-                        android:textSize="18sp"/>
+                        android:text="Drive, Dropbox o Almacenamiento Local"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/darker_gray"/>
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

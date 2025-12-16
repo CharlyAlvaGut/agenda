@@ -40,6 +40,8 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
     private val BASE_URL_CONSULTA = "http://10.0.2.2/agenda_api/consult_eventos.php"
     private val URL_DELETE = "http://10.0.2.2/agenda_api/delete_evento.php"
 
+    private var ultimaUrlConsulta: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -122,6 +124,8 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
 
             val idCategoria = obtenerIdCategoriaDesdeSpinner(spTipo.selectedItemPosition)
             val url = construirUrlConsulta(criterioApi, idCategoria) ?: return@setOnClickListener
+
+            ultimaUrlConsulta = url
 
             consultarEventos(url)
         }
@@ -380,8 +384,12 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
             URL_DELETE,
             { response ->
                 Toast.makeText(requireContext(), "Evento eliminado", Toast.LENGTH_SHORT).show()
-                // Opcional: volver a ejecutar la búsqueda actual
-                containerResultados.removeAllViews()
+                // En lugar de solo limpiar, recargamos la búsqueda anterior
+                if (ultimaUrlConsulta != null) {
+                    consultarEventos(ultimaUrlConsulta!!)
+                } else {
+                    containerResultados.removeAllViews() // Solo limpia si no hay url guardada
+                }
             },
             { error ->
                 error.printStackTrace()
