@@ -2,9 +2,13 @@ package com.ipn.escom.moviles.agenda
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Build
 import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
@@ -15,7 +19,8 @@ import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import java.util.Calendar
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AddEventFragment : Fragment(R.layout.fragment_add_event) {
 
@@ -31,6 +36,8 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
     private lateinit var etUbicacion: EditText
     private lateinit var spCategoria: Spinner
     private lateinit var spStatus: Spinner
+
+    private lateinit var spNotificacion: Spinner
 
     // Lanzadores de permisos y resultados
     private val contactPickerLauncher = registerForActivityResult(
@@ -72,6 +79,19 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // --- NUEVO: Pedir permiso de notificaciones en Android 13+ ---
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Usamos el mismo launcher de permisos que ya tenías o creamos uno genérico
+                // Para rápido, pedimos directo al sistema:
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
+            }
+        }
+
         // --- 0. Leemos argumentos (por si venimos en modo edición) ---
         idEvento = arguments?.getString("id_evento")
 
@@ -85,6 +105,7 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
         // --- 2. INICIALIZAMOS VISTAS ---
         spCategoria = view.findViewById(R.id.spCategoria)
         spStatus    = view.findViewById(R.id.spStatus)
+        spNotificacion = view.findViewById(R.id.spNotificacion)
         etFecha     = view.findViewById(R.id.etFecha)
         etHora      = view.findViewById(R.id.etHora)
         etDescripcion = view.findViewById(R.id.etDescripcion)
@@ -103,6 +124,13 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
         adapterStatus.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spStatus.adapter = adapterStatus
         spStatus.setSelection(0)
+
+        // --- CONFIGURAR SPINNER NOTIFICACIÓN ---
+        val opcionesNotif = listOf("Sin recordatorio", "A la hora exacta", "10 minutos antes", "1 día antes")
+        val adapterNotif = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opcionesNotif)
+        adapterNotif.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spNotificacion.adapter = adapterNotif
+        spNotificacion.setSelection(0) // Por defecto: Sin recordatorio
 
         // --- 4. Si estamos en modo edición, rellenamos los campos ---
         if (idEvento != null) {
@@ -229,6 +257,15 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
                 }
                 Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show()
 
+                // --- NUEVO: PROGRAMAR LA NOTIFICACIÓN ---
+                val opcionNotif = spNotificacion.selectedItemPosition
+                val tituloEvento = if (etDescripcion.text.isNotEmpty()) etDescripcion.text.toString() else "Evento Agenda"
+
+                // Solo programamos si es un ALTA (idEvento == null) o si quieres reprogramar al editar
+                // Usamos System.currentTimeMillis().toInt() como ID único temporal para la alarma
+                val idUnico = System.currentTimeMillis().toInt()
+                programarAlarma(fecha, hora, tituloEvento, opcionNotif, idUnico)
+
                 // Solo limpiamos si es ALTA; en edición normalmente regresas a la lista
                 if (idEvento == null) {
                     etFecha.text.clear()
@@ -238,6 +275,7 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
                     etUbicacion.text.clear()
                     spCategoria.setSelection(0)
                     spStatus.setSelection(0)
+                    spNotificacion.setSelection(0)
                 }
             },
             { error ->
@@ -289,5 +327,61 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
         }
 
         queue.add(stringRequest)
+    }
+
+    private fun programarAlarma(fecha: String, hora: String, titulo: String, opcion: Int, idRequest: Int) {
+        if (opcion == 0) return // "Sin recordatorio"
+
+        val c = Calendar.getInstance()
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        try {
+            // Parsear la fecha y hora del evento
+            c.time = sdf.parse("$fecha $hora")!!
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return
+        }
+
+        // Calcular el momento del disparo según la opción
+        when (opcion) {
+            1 -> {} // A la hora exacta (no restamos nada)
+            2 -> c.add(Calendar.MINUTE, -10) // 10 min antes
+            3 -> c.add(Calendar.DAY_OF_YEAR, -1) // 1 día antes
+        }
+
+        // Si la hora calculada ya pasó, no programamos nada
+        if (c.timeInMillis < System.currentTimeMillis()) {
+            Toast.makeText(requireContext(), "El recordatorio sería en el pasado, no se programó.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Crear el Intent para el BroadcastReceiver
+        val intent = Intent(requireContext(), NotificationReceiver::class.java).apply {
+            putExtra("titulo", "Recordatorio: $titulo")
+            putExtra("mensaje", "Es hora de tu evento programado: $titulo")
+            putExtra("id_evento", idRequest)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(),
+            idRequest,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        try {
+            // Usamos setExact para precisión (requiere permiso en Android 12+)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, c.timeInMillis, pendingIntent)
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.timeInMillis, pendingIntent)
+            }
+            Toast.makeText(requireContext(), "Recordatorio programado", Toast.LENGTH_SHORT).show()
+        } catch (e: SecurityException) {
+            // En caso de que falte el permiso SCHEDULE_EXACT_ALARM
+            Toast.makeText(requireContext(), "No se pudo programar alarma (Falta permiso)", Toast.LENGTH_SHORT).show()
+        }
     }
 }
