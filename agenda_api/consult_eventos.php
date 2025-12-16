@@ -90,21 +90,20 @@ if ($criterio === "fecha") {
 
 } elseif ($criterio === "mes") {
     $mes  = isset($_GET["mes"])  ? intval($_GET["mes"])  : null;  // 1..12
-    $anio = isset($_GET["anio"]) ? intval($_GET["anio"]) : null;
 
-    if (!$mes || !$anio) {
-        http_response_code(400);
-        echo json_encode([
-            "ok" => false,
-            "error" => "Faltan parámetros 'mes' (1-12) y/o 'anio'"
-        ]);
-        exit;
-    }
+        if (!$mes) {
+            http_response_code(400);
+            echo json_encode([
+                "ok" => false,
+                "error" => "Falta parámetro 'mes' (1-12)"
+            ]);
+            exit;
+        }
 
-    $sql = $selectBase . " AND YEAR(e.d_f_fechevento) = ? AND MONTH(e.d_f_fechevento) = ?";
-    $tipos = "ii";
-    $valores[] = $anio;
-    $valores[] = $mes;
+        // Solo filtramos por mes. MySQL traerá Enero 2024, Enero 2025, etc.
+        $sql = $selectBase . " AND MONTH(e.d_f_fechevento) = ?";
+        $tipos = "i";
+        $valores[] = $mes;
 
 } elseif ($criterio === "anio") {
     $anio = isset($_GET["anio"]) ? intval($_GET["anio"]) : null;

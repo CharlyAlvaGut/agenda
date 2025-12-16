@@ -154,16 +154,14 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
             }
 
             "mes" -> {
-                val mesSeleccionado = spMes.selectedItemPosition + 1  // 1..12
-                val anioTexto = etAnio.text.toString().trim()
-
-                if (anioTexto.isEmpty()) {
-                    Toast.makeText(requireContext(), "Captura el año", Toast.LENGTH_SHORT).show()
-                    return null
-                }
-
+                val mesSeleccionado = spMes.selectedItemPosition + 1
                 builder.appendQueryParameter("mes", mesSeleccionado.toString())
-                builder.appendQueryParameter("anio", anioTexto)
+
+                // El año es opcional, si el usuario escribió algo, lo mandamos. Si no, no pasa nada.
+                val anioTexto = etAnio.text.toString().trim()
+                if (anioTexto.isNotEmpty()) {
+                    builder.appendQueryParameter("anio", anioTexto)
+                }
             }
 
             "anio" -> {
