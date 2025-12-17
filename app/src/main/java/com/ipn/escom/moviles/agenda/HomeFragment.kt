@@ -32,7 +32,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun cargarEventosHome() {
         // Usa tu IP correcta
-        val url = "http://10.0.2.2/agenda_api/get_agenda_home.php"
+        val url = Config.BASE_URL+"get_agenda_home.php"
 
         val request = JsonObjectRequest(Request.Method.GET, url, null,
             { response ->

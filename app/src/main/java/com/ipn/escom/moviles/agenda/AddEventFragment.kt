@@ -241,7 +241,7 @@ class AddEventFragment : Fragment(R.layout.fragment_add_event) {
         idCat: String,
         idStatus: String
     ) {
-        val url = "http://10.0.2.2/agenda_api/add_evento.php"
+        val url = Config.BASE_URL+"add_evento.php"
         val queue = Volley.newRequestQueue(requireContext())
 
         val stringRequest = object : StringRequest(

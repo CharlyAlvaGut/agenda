@@ -47,7 +47,7 @@ class BackupFragment : Fragment(R.layout.fragment_backup) {
 
     private fun iniciarRespaldo() {
         // CAMBIA LA IP POR LA TUYA SI USAS CELULAR FÍSICO
-        val url = "http://10.0.2.2/agenda_api/backup_data.php"
+        val url = Config.BASE_URL+"backup_data.php"
 
         val request = StringRequest(Request.Method.GET, url,
             { response ->

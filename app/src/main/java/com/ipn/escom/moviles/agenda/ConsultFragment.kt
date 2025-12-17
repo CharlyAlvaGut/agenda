@@ -37,8 +37,8 @@ class ConsultFragment : Fragment(R.layout.fragment_consult) {
     private lateinit var spTipo: Spinner
 
     // URLs base de tu API
-    private val BASE_URL_CONSULTA = "http://10.0.2.2/agenda_api/consult_eventos.php"
-    private val URL_DELETE = "http://10.0.2.2/agenda_api/delete_evento.php"
+    private val BASE_URL_CONSULTA = Config.BASE_URL+"consult_eventos.php"
+    private val URL_DELETE = Config.BASE_URL+"delete_evento.php"
 
     private var ultimaUrlConsulta: String? = null
 

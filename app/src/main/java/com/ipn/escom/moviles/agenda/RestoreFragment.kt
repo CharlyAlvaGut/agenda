@@ -50,7 +50,7 @@ class RestoreFragment : Fragment(R.layout.fragment_restore) {
 
     private fun enviarDatosAlServidor(json: String) {
         // CAMBIA LA IP POR LA TUYA SI USAS CELULAR FÍSICO
-        val url = "http://10.0.2.2/agenda_api/restore_data.php"
+        val url = Config.BASE_URL+"restore_data.php"
 
         val request = object : StringRequest(Request.Method.POST, url,
             { response ->
